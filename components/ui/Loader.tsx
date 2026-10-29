@@ -13,9 +13,11 @@ export default function Loader({ loading }: LoaderProps) {
       {loading && (
         <motion.div
           initial={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.8 }}
-          className="fixed inset-0 z-[9999] flex items-center justify-center bg-black"
+          // Added y: "-100%" to physically slide the loader up and out of the way
+          exit={{ opacity: 0, y: "-100%" }}
+          transition={{ duration: 0.8, ease: "easeInOut" }}
+          // Changed bg-black to your theme's dark navy
+          className="fixed inset-0 z-[9999] flex items-center justify-center bg-[#06101d]"
         >
           {/* Blue Background Glow */}
           <div className="absolute h-96 w-96 rounded-full bg-[#1296e8]/20 blur-3xl" />
@@ -33,7 +35,7 @@ export default function Loader({ loading }: LoaderProps) {
             />
 
             {/* Loading Text / Tagline */}
-            <p className="mt-8 text-sm uppercase tracking-[0.45em] text-[#1296e8]">
+            <p className="mt-8 text-xs sm:text-sm uppercase tracking-[0.45em] text-[#1296e8] text-center px-4">
               Engineering Excellence Since 2015
             </p>
 
