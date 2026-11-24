@@ -45,6 +45,9 @@ html {
   scroll-behavior: smooth;
   width: 100%;
   overflow-x: clip;
+  
+  /* CRITICAL FIX: Stops the browser from auto-scrolling when images load */
+  overflow-anchor: none; 
 }
 
 body {
@@ -136,25 +139,6 @@ section {
 }
 
 /* =========================================================
-   RESPONSIVE TYPOGRAPHY HELPERS
-   ========================================================= */
-
-.text-responsive-xl {
-  font-size: clamp(2rem, 4vw, 4rem);
-  line-height: 1.08;
-}
-
-.text-responsive-lg {
-  font-size: clamp(1.75rem, 3vw, 3rem);
-  line-height: 1.12;
-}
-
-.text-responsive-md {
-  font-size: clamp(1rem, 1.4vw, 1.125rem);
-  line-height: 1.75;
-}
-
-/* =========================================================
    HERO SLOW ZOOM
    ========================================================= */
 
@@ -170,51 +154,6 @@ section {
 
 .animate-slowZoom {
   animation: slowZoom 20s ease-in-out infinite alternate;
-}
-
-/* =========================================================
-   CLIENT LOGO MARQUEE
-   ========================================================= */
-
-@keyframes marquee {
-  from {
-    transform: translateX(0);
-  }
-
-  to {
-    transform: translateX(-50%);
-  }
-}
-
-.animate-marquee {
-  display: flex;
-  width: max-content;
-  animation: marquee 25s linear infinite;
-  will-change: transform;
-}
-
-.animate-marquee:hover {
-  animation-play-state: paused;
-}
-
-/* =========================================================
-   FADE IN
-   ========================================================= */
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(50px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.animate-fadeIn {
-  animation: fadeInUp 1s ease both;
 }
 
 /* =========================================================

@@ -1,28 +1,43 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { ReactLenis } from "@studio-freight/react-lenis";
 
 import Loader from "@/components/ui/Loader";
 import Navbar from "@/components/layout/Navbar";
 import Hero from "@/components/sections/Hero";
-import About from "@/components/sections/About";
 import Services from "@/components/sections/Services";
-import Industries from "@/components/sections/Industries";
 import Infrastructure from "@/components/sections/Infrastructure";
 import Projects from "@/components/sections/Projects";
-import WhyChoose from "@/components/sections/WhyChoose";
 import Achievements from "@/components/sections/Achievements";
-import Clients from "@/components/sections/Clients";
+import ClientVisitsGallery from "@/components/sections/ClientVisitsGallery";
+import WhyChoose from "@/components/sections/WhyChoose";
+import Industries from "@/components/sections/Industries";
 import Contact from "@/components/sections/Contact";
 import Footer from "@/components/layout/Footer";
+
 import WhatsAppButton from "@/components/ui/WhatsAppButton";
 import ScrollToTop from "@/components/ui/ScrollToTop";
 
 export default function Home() {
   const [loading, setLoading] = useState(true);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const lenisRef = useRef<any>(null);
+  const hasMounted = useRef(false);
 
+  // 1. Clear the hash immediately so Lenis doesn't read it on mount
   useEffect(() => {
+    if (typeof window !== "undefined") {
+      if ("scrollRestoration" in window.history) {
+        window.history.scrollRestoration = "manual";
+      }
+
+      if (!hasMounted.current && window.location.pathname === "/") {
+        window.history.replaceState(null, "", window.location.pathname);
+        hasMounted.current = true;
+      }
+    }
+
     const timer = setTimeout(() => {
       setLoading(false);
     }, 1500);
@@ -30,24 +45,28 @@ export default function Home() {
     return () => clearTimeout(timer);
   }, []);
 
-  return (
-    <ReactLenis root>
-      <Loader loading={loading} />
-      
-      <main className="relative min-h-screen bg-[#06101d] bg-[linear-gradient(to_right,rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:40px_40px]">
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-[800px] bg-gradient-to-b from-[#098eed]/10 to-transparent" />
+  // 2. The moment the loader finishes, force Lenis to the very top
+  useEffect(() => {
+    if (!loading && lenisRef.current?.lenis) {
+      lenisRef.current.lenis.scrollTo(0, { immediate: true });
+    }
+  }, [loading]);
 
-        <div className="relative z-10">
+  return (
+    <ReactLenis root ref={lenisRef}>
+      <Loader loading={loading} />
+
+      <main className="relative min-h-screen w-full overflow-x-clip bg-[#f4f7fb] text-slate-900">
+        <div className="relative z-10 w-full">
           <Navbar />
           <Hero />
-          <About />
           <Services />
-          <Industries />
           <Infrastructure />
           <Projects />
-          <WhyChoose />
           <Achievements />
-          <Clients />
+          <ClientVisitsGallery />
+          <WhyChoose />
+          <Industries />
           <Contact />
           <Footer />
         </div>

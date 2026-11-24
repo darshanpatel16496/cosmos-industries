@@ -4,6 +4,12 @@ import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 
 export default function HeroContent() {
+  // Helper to trigger the Navbar's scroll logic
+  const handleNavClick = (e: React.MouseEvent, id: string) => {
+    e.preventDefault();
+    window.dispatchEvent(new CustomEvent("navigate-to-section", { detail: id }));
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 60 }}
@@ -107,8 +113,8 @@ export default function HeroContent() {
         className="mt-10 flex flex-wrap gap-4"
       >
         {/* Primary CTA */}
-        <a
-          href="#contact"
+        <button
+          onClick={(e) => handleNavClick(e, "contact")}
           className="
             group
             inline-flex
@@ -131,7 +137,6 @@ export default function HeroContent() {
           "
         >
           Request Quote
-
           <ArrowRight
             size={18}
             className="
@@ -140,11 +145,11 @@ export default function HeroContent() {
               group-hover:translate-x-1
             "
           />
-        </a>
+        </button>
 
         {/* Secondary CTA */}
-        <a
-          href="#projects"
+        <button
+          onClick={(e) => handleNavClick(e, "projects")}
           className="
             inline-flex
             items-center
@@ -167,7 +172,7 @@ export default function HeroContent() {
           "
         >
           View Projects
-        </a>
+        </button>
       </motion.div>
     </motion.div>
   );

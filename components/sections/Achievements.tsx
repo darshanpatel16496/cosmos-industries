@@ -1,11 +1,21 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Award, Factory, Briefcase, Users, Wrench, ShieldCheck, Clock3, Settings,
-  ChevronLeft, ChevronRight, Medal,
+  Award,
+  Factory,
+  Briefcase,
+  Users,
+  Wrench,
+  ShieldCheck,
+  Clock3,
+  Settings,
+  ChevronLeft,
+  ChevronRight,
+  Medal,
+  Image as ImageIcon,
 } from "lucide-react";
 
 const milestones = [
@@ -14,13 +24,13 @@ const milestones = [
   { icon: Briefcase, value: "500+", label: "Projects Delivered" },
   { icon: Users, value: "25+", label: "Satisfied Clients" },
   { icon: Wrench, value: "35+", label: "Skilled Experts" },
-  { icon: ShieldCheck, value: "100%", label: "Quality Focus" },
+  { icon: ShieldCheck, value: "ISO", label: "9001:2015 Certified" },
   { icon: Clock3, value: "24x7", label: "Customer Support" },
   { icon: Settings, value: "OEM", label: "Manufacturing" },
 ];
 
 const achievementImages = [
-  { src: "/images/achievements/vendor-award.png" }, 
+  { src: "/images/achievements/vendor-award.png" },
   { src: "/images/achievements/team-award.png" },
   { src: "/images/achievements/ceremony.png" },
   { src: "/images/achievements/e7.png" },
@@ -30,155 +40,165 @@ const achievementImages = [
   { src: "/images/achievements/e3.png" },
   { src: "/images/achievements/e4.png" },
   { src: "/images/achievements/e5.png" },
-  { src: "/images/achievements/e6.png" } 
+  { src: "/images/achievements/e6.png" },
 ];
 
 export default function Milestones() {
   const [activeImage, setActiveImage] = useState(0);
+  const [failedSrcs, setFailedSrcs] = useState<Record<string, boolean>>({});
+
+  const visibleImages = achievementImages.filter((img) => !failedSrcs[img.src]);
+  const safeList = visibleImages.length > 0 ? visibleImages : achievementImages;
+  const currentIndex = activeImage % safeList.length;
+
+  const nextImage = useCallback(() => {
+    setActiveImage((prev) => (prev + 1) % safeList.length);
+  }, [safeList.length]);
+
+  const prevImage = useCallback(() => {
+    setActiveImage((prev) => (prev - 1 + safeList.length) % safeList.length);
+  }, [safeList.length]);
 
   useEffect(() => {
+    if (safeList.length <= 1) return;
     const timer = setInterval(() => {
-      setActiveImage((prev) => (prev + 1) % achievementImages.length);
+      nextImage();
     }, 4000);
     return () => clearInterval(timer);
+  }, [nextImage, safeList.length]);
+
+  const handleImageError = useCallback((src: string) => {
+    setFailedSrcs((prev) => (prev[src] ? prev : { ...prev, [src]: true }));
   }, []);
-
-  const nextImage = () => {
-    setActiveImage((prev) => (prev + 1) % achievementImages.length);
-  };
-
-  const prevImage = () => {
-    setActiveImage((prev) => (prev - 1 + achievementImages.length) % achievementImages.length);
-  };
 
   return (
     <section
       id="milestones"
-      className="relative flex min-h-[100svh] w-full flex-col justify-center scroll-mt-24 overflow-hidden bg-[#07111f] py-12 lg:py-16"
+      className="relative flex min-h-[calc(100dvh-76px)] w-full scroll-mt-[76px] flex-col overflow-hidden bg-[#f4f7fb] text-slate-900 lg:h-[calc(100dvh-76px)]"
     >
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_center,rgba(9,142,237,0.08),transparent_50%)]" />
-      <div className="pointer-events-none absolute inset-0 opacity-[0.03] bg-[linear-gradient(rgba(255,255,255,0.08)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.08)_1px,transparent_1px)] bg-[length:50px_50px]" />
-
-      <div className="relative z-10 mx-auto w-full px-4 sm:px-6 lg:px-10">
-        
-        {/* Header - LEFT ALIGNED WITH BADGE */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="mb-10 flex w-full flex-col items-start justify-start gap-4 sm:flex-row sm:items-center sm:gap-6"
-        >
-          {/* Badge */}
-          <div className="inline-flex shrink-0 items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-4 py-1.5">
-            <span className="h-1.5 w-1.5 rounded-full bg-[#42b4ff]" />
-            <span className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-100">
-              Our Achievements
+      {/* Header Bar */}
+      <div className="flex shrink-0 flex-wrap items-center justify-between gap-3 border-y border-slate-200 bg-white px-6 py-4 sm:px-10 sm:py-5 lg:px-12">
+        <div className="flex flex-col items-start gap-1">
+          <div className="mb-0.5 flex items-center gap-2">
+            <Award className="h-3.5 w-3.5 text-[#0284c7]" />
+            <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#0284c7]">
+              Engineering Milestones
             </span>
           </div>
-          
-          {/* Heading */}
-          <h2 className="text-3xl font-semibold leading-tight tracking-tight text-white sm:text-4xl lg:text-5xl">
-            Engineering <span className="text-[#42b4ff]">Milestones</span>
+
+          <h2 className="text-2xl font-bold tracking-tight text-[#0b192c] sm:text-3xl">
+            Proven Track Record &amp;{" "}
+            <span className="text-[#0284c7]">Industrial Recognition</span>
           </h2>
-        </motion.div>
+        </div>
 
-        <div className="grid gap-6 lg:grid-cols-[1fr_1.2fr] lg:gap-8">
-          
-          {/* LEFT COLUMN: Image Slider */}
-          <div className="relative flex flex-col overflow-hidden rounded-3xl border border-white/10 bg-[#06101d] shadow-2xl">
-            <div className="group relative h-[300px] w-full sm:h-[350px] lg:h-full lg:min-h-[420px]">
-              
-              <AnimatePresence mode="popLayout">
-                <motion.div
-                  key={activeImage}
-                  initial={{ opacity: 0, scale: 1.05 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.6 }}
-                  className="absolute inset-0"
-                >
-                  <Image
-                    src={achievementImages[activeImage].src}
-                    alt={`Achievement ${activeImage + 1}`}
-                    fill
-                    priority={activeImage === 0}
-                    sizes="(max-width: 1024px) 100vw, 45vw"
-                    className="object-cover"
-                    // If an image is broken/missing, this skips it automatically
-                    onError={() => {
-                      console.error(`Failed to load: ${achievementImages[activeImage].src}. Moving to next image.`);
-                      nextImage();
-                    }}
-                  />
-                </motion.div>
-              </AnimatePresence>
+        <span className="hidden rounded-md border border-slate-200 bg-[#f4f7fb] px-3.5 py-1.5 font-mono text-xs font-semibold uppercase tracking-[0.14em] text-slate-600 sm:block">
+          8 Core Performance Benchmarks
+        </span>
+      </div>
 
-              <div className="absolute inset-0 bg-gradient-to-t from-[#06101d] via-[#06101d]/40 to-transparent z-10" />
+      {/* Edge-to-Edge 12-Column Split */}
+      <div className="grid min-h-0 w-full flex-1 grid-cols-1 overflow-y-auto lg:grid-cols-12 lg:overflow-hidden">
+        {/* LEFT COLUMN: Full-Bleed Steel-Navy Award & Event Slider (7 Cols) */}
+        <div className="flex flex-col bg-[#0b192c] text-white lg:col-span-7 lg:border-r lg:border-slate-200">
+          <div className="group relative min-h-[340px] w-full flex-1 overflow-hidden bg-[#081322] sm:min-h-[380px] lg:h-full lg:min-h-0">
+            <AnimatePresence mode="popLayout">
+              <motion.div
+                key={safeList[currentIndex].src}
+                initial={{ opacity: 0, scale: 1.03 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.55 }}
+                className="absolute inset-0"
+              >
+                <Image
+                  src={safeList[currentIndex].src}
+                  alt={`Achievement ${currentIndex + 1}`}
+                  fill
+                  priority={currentIndex === 0}
+                  sizes="(max-width: 1024px) 100vw, 60vw"
+                  className="object-cover"
+                  onError={() => handleImageError(safeList[currentIndex].src)}
+                />
+              </motion.div>
+            </AnimatePresence>
 
-              <div className="absolute top-4 left-4 z-20 inline-flex items-center gap-2 rounded-full border border-[#42b4ff]/30 bg-[#098eed]/20 px-3 py-1.5 backdrop-blur-md">
-                <Medal size={14} className="text-[#42b4ff]" />
-                <span className="text-[10px] font-bold uppercase tracking-widest text-[#42b4ff]">
-                  Award Winning
-                </span>
-              </div>
+            <div className="pointer-events-none absolute inset-0 z-10 bg-gradient-to-t from-[#061120]/90 via-transparent to-[#061120]/40" />
 
-              <div className="absolute bottom-6 right-6 z-20 flex items-center gap-2 rounded-full bg-black/60 px-4 py-2 backdrop-blur-md">
-                <span className="text-xs font-bold tracking-widest text-white">
-                  {String(activeImage + 1).padStart(2, '0')} 
-                  <span className="text-slate-400"> / {String(achievementImages.length).padStart(2, '0')}</span>
-                </span>
-              </div>
-
-              <div className="absolute right-4 top-1/2 -translate-y-1/2 z-20 flex flex-col gap-2 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                <button onClick={prevImage} className="flex h-10 w-10 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-md hover:bg-[#098eed]">
-                  <ChevronLeft size={20} />
-                </button>
-                <button onClick={nextImage} className="flex h-10 w-10 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-md hover:bg-[#098eed]">
-                  <ChevronRight size={20} />
-                </button>
-              </div>
-
-              <div className="absolute bottom-6 left-6 z-20 flex flex-wrap gap-1.5 max-w-[200px] sm:max-w-none">
-                {achievementImages.map((_, idx) => (
-                  <span
-                    key={idx}
-                    className={`h-1.5 rounded-full transition-all duration-300 ${
-                      activeImage === idx ? "bg-[#42b4ff] w-6" : "bg-white/30 w-1.5"
-                    }`}
-                  />
-                ))}
-              </div>
+            {/* Award Badge */}
+            <div className="absolute left-5 top-5 z-20 inline-flex items-center gap-2 rounded-md border border-amber-400/35 bg-[#081322]/85 px-3.5 py-1.5 shadow-lg backdrop-blur-md">
+              <Medal size={15} className="text-amber-400" />
+              <span className="font-mono text-[11px] font-bold uppercase tracking-widest text-amber-300">
+                Award Winning
+              </span>
             </div>
-          </div>
 
-          {/* RIGHT COLUMN: Stats Grid */}
-          <div className="grid grid-cols-2 gap-3 sm:gap-4">
+            {/* Counter */}
+            <div className="absolute bottom-5 right-5 z-20 flex items-center gap-2 rounded-md border border-white/15 bg-[#081322]/85 px-3.5 py-1.5 backdrop-blur-md">
+              <ImageIcon size={14} className="text-[#42b4ff]" />
+              <span className="font-mono text-xs font-bold tracking-widest text-white">
+                {String(currentIndex + 1).padStart(2, "0")}
+                <span className="text-slate-400">
+                  {" "}
+                  / {String(safeList.length).padStart(2, "0")}
+                </span>
+              </span>
+            </div>
+
+            {/* Prev / Next Arrows */}
+            {safeList.length > 1 && (
+              <div className="absolute right-5 top-1/2 z-20 flex -translate-y-1/2 flex-col gap-2 opacity-95 transition-opacity duration-300 sm:opacity-0 sm:group-hover:opacity-100">
+                <button
+                  type="button"
+                  onClick={prevImage}
+                  aria-label="Previous achievement image"
+                  className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-md border border-white/15 bg-[#081322]/90 text-white backdrop-blur-md transition-all hover:border-[#42b4ff] hover:bg-[#42b4ff] hover:text-[#061220]"
+                >
+                  <ChevronLeft size={19} />
+                </button>
+                <button
+                  type="button"
+                  onClick={nextImage}
+                  aria-label="Next achievement image"
+                  className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-md border border-white/15 bg-[#081322]/90 text-white backdrop-blur-md transition-all hover:border-[#42b4ff] hover:bg-[#42b4ff] hover:text-[#061220]"
+                >
+                  <ChevronRight size={19} />
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* RIGHT COLUMN: Crisp Light-Slate Milestone Grid (5 Cols) */}
+        <div className="flex bg-[#f4f7fb] lg:col-span-5 lg:h-full">
+          <div className="grid w-full grid-cols-1 bg-slate-200 gap-px sm:grid-cols-2">
             {milestones.map((item, index) => {
               const Icon = item.icon;
               return (
                 <motion.div
                   key={item.label}
-                  initial={{ opacity: 0, y: 15 }}
+                  initial={{ opacity: 0, y: 12 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ duration: 0.4, delay: index * 0.05 }}
-                  className="group flex flex-col items-center justify-center rounded-2xl border border-white/10 bg-[#06101d]/80 p-4 text-center transition-all duration-300 hover:-translate-y-1 hover:border-[#42b4ff]/50 hover:bg-[#0a1b2e] hover:shadow-[0_0_20px_rgba(9,142,237,0.1)]"
+                  transition={{ duration: 0.35, delay: index * 0.04 }}
+                  className="group flex flex-col justify-between bg-white p-5 transition-colors hover:bg-sky-50/50 sm:p-6"
                 >
-                  <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-xl border border-[#42b4ff]/30 bg-[#098eed]/10 transition-all duration-300 group-hover:scale-110 group-hover:bg-[#098eed] sm:h-11 sm:w-11">
-                    <Icon size={20} className="text-[#42b4ff] transition-colors duration-300 group-hover:text-white" />
+                  <div className="mb-2 flex items-center gap-2.5">
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-sky-200 bg-sky-50 text-[#0284c7] transition-transform duration-300 group-hover:scale-105">
+                      <Icon size={16} />
+                    </div>
+                    <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-slate-500">
+                      {item.label}
+                    </p>
                   </div>
-                  <h3 className="text-2xl font-black text-[#42b4ff] sm:text-3xl">
+
+                  <h3 className="font-mono text-2xl font-black tracking-tight text-[#0b192c] sm:text-3xl">
                     {item.value}
                   </h3>
-                  <p className="mt-0.5 text-[9px] font-bold uppercase tracking-[0.1em] text-slate-400 sm:text-[10px]">
-                    {item.label}
-                  </p>
                 </motion.div>
               );
             })}
           </div>
-
         </div>
       </div>
     </section>

@@ -20,9 +20,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  // ADDED metadataBase HERE
   metadataBase: new URL("https://www.cosmosindustries.co.in"),
-  
+
   title: {
     default: "Cosmos Industries | Heavy Engineering & Fabrication",
     template: "%s | Cosmos Industries",
@@ -51,7 +50,7 @@ export const metadata: Metadata = {
     siteName: "Cosmos Industries",
     images: [
       {
-        url: "/og-image.jpg", // Next.js will automatically resolve this to https://www.cosmosindustries.co.in/og-image.jpg
+        url: "/og-image.jpg",
         width: 1200,
         height: 630,
       },
@@ -86,6 +85,7 @@ export default function RootLayout({
       <body>
         <EngineeringBackground />
         <ScrollProgress />
+
         <SmoothScroll>
           {children}
         </SmoothScroll>
